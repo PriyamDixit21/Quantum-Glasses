@@ -1,0 +1,47 @@
+# Quantum Glasses
+
+Quantum Glasses is a **Tkinter-based GUI** application powered by **Qiskit** that allows users to visualize single-qubit quantum operations on a **Bloch sphere** in real time.  
+
+This project combines **Python GUI development** with **quantum computing concepts** to provide an interactive learning and simulation tool.
+
+---
+
+## 🎯 Features
+
+- Apply **standard quantum gates**: `X`, `Y`, `Z`, `H`, `S`
+- Apply **rotation gates**: `Rx(θ)`, `Ry(θ)`, `Rz(θ)` (user-specified angles in degrees)
+- **Reset** the qubit state to \|0⟩
+- **Measure** the qubit and view outcome probabilities
+- **Visualize** the current state as a **Bloch sphere** in a separate Matplotlib window
+- Live amplitude updates for \|0⟩ and \|1⟩
+
+---
+
+## 🖼️ Screenshots
+
+### Main Interface
+![Main GUI](assets/main_gui.png)
+
+### Bloch Sphere Visualization
+![Bloch Sphere](assets/bloch_sphere.png)
+
+---
+
+## 🛠️ Installation
+
+**Requirements**: Python 3.9+, pip, and virtual environment (optional but recommended)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/<your-username>/quantum-glasses.git
+cd quantum-glasses
+
+# 2. Create and activate a virtual environment (Windows)
+python -m venv venv
+.\venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run the application
+python quantum_glasses.py
