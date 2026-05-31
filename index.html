@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Quantum Glasses — Interactive Quantum Gate Visualizer</title>
+  <meta name="description"
+    content="Apply quantum gates interactively and watch your qubit evolve on a real-time 3-D Bloch sphere. Supports Pauli, Clifford, rotation and phase gates with full circuit history." />
+  <meta property="og:title"       content="Quantum Glasses" />
+  <meta property="og:description" content="Interactive Quantum Gate Visualizer" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════ -->
+  <header id="header">
+    <div class="header-brand">
+      <div class="brand-icon" aria-hidden="true">⚛</div>
+      <div>
+        <h1 class="brand-name">Quantum Glasses</h1>
+        <p class="brand-sub">Interactive Quantum Gate Visualizer</p>
+      </div>
+    </div>
+
+    <div class="header-state">
+      <span class="state-badge">State: <span id="header-ket">|0⟩</span></span>
+    </div>
+
+    <div class="header-actions">
+      <button id="btn-undo"  class="hdr-btn"         disabled title="Undo (Ctrl+Z)">⬅ Undo</button>
+      <button id="btn-redo"  class="hdr-btn"         disabled title="Redo (Ctrl+Y)">Redo ➡</button>
+      <button id="btn-reset" class="hdr-btn hdr-btn--danger" title="Reset qubit to |0⟩">⟳ Reset |0⟩</button>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════
+       MAIN 3-COLUMN LAYOUT
+  ════════════════════════════════════════════ -->
+  <main id="main">
+
+    <!-- ─── LEFT: Gate Palette ─────────────────────── -->
+    <aside id="gate-palette" class="glass-panel" aria-label="Gate palette">
+
+      <!-- Pauli Gates -->
+      <div class="cat-section" data-cat="pauli">
+        <div class="cat-header">
+          <span class="cat-dot"></span>
+          <h2 class="cat-title">Pauli Gates</h2>
+        </div>
+        <div class="gate-grid">
+          <button class="gate-btn" data-gate="X" data-cat="pauli" aria-label="X gate">
+            <span class="gb-sym">X</span>
+            <span class="gb-name">NOT</span>
+          </button>
+          <button class="gate-btn" data-gate="Y" data-cat="pauli" aria-label="Y gate">
+            <span class="gb-sym">Y</span>
+            <span class="gb-name">Pauli-Y</span>
+          </button>
+          <button class="gate-btn" data-gate="Z" data-cat="pauli" aria-label="Z gate">
+            <span class="gb-sym">Z</span>
+            <span class="gb-name">Phase Flip</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Clifford Gates -->
+      <div class="cat-section" data-cat="clifford">
+        <div class="cat-header">
+          <span class="cat-dot"></span>
+          <h2 class="cat-title">Clifford Gates</h2>
+        </div>
+        <div class="gate-grid">
+          <button class="gate-btn" data-gate="H"     data-cat="clifford" aria-label="Hadamard gate">
+            <span class="gb-sym">H</span>
+            <span class="gb-name">Hadamard</span>
+          </button>
+          <button class="gate-btn" data-gate="S"     data-cat="clifford" aria-label="S gate">
+            <span class="gb-sym">S</span>
+            <span class="gb-name">π/2 Phase</span>
+          </button>
+          <button class="gate-btn" data-gate="S_DAG" data-cat="clifford" aria-label="S-dagger gate">
+            <span class="gb-sym">S†</span>
+            <span class="gb-name">S-dagger</span>
+          </button>
+          <button class="gate-btn" data-gate="T"     data-cat="clifford" aria-label="T gate">
+            <span class="gb-sym">T</span>
+            <span class="gb-name">π/4 Phase</span>
+          </button>
+          <button class="gate-btn" data-gate="T_DAG" data-cat="clifford" aria-label="T-dagger gate">
+            <span class="gb-sym">T†</span>
+            <span class="gb-name">T-dagger</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rotation Gates -->
+      <div class="cat-section" data-cat="rotation">
+        <div class="cat-header">
+          <span class="cat-dot"></span>
+          <h2 class="cat-title">Rotation Gates</h2>
+        </div>
+        <div class="angle-group">
+          <label for="rot-angle">θ</label>
+          <input type="number" id="rot-angle" value="90"
+                 min="-360" max="360" step="5"
+                 class="angle-input" aria-label="Rotation angle in degrees" />
+          <span class="angle-unit">°</span>
+        </div>
+        <div class="gate-grid">
+          <button class="gate-btn" data-gate="RX" data-cat="rotation" aria-label="Rx rotation gate">
+            <span class="gb-sym">Rx</span>
+            <span class="gb-name">X-rotation</span>
+          </button>
+          <button class="gate-btn" data-gate="RY" data-cat="rotation" aria-label="Ry rotation gate">
+            <span class="gb-sym">Ry</span>
+            <span class="gb-name">Y-rotation</span>
+          </button>
+          <button class="gate-btn" data-gate="RZ" data-cat="rotation" aria-label="Rz rotation gate">
+            <span class="gb-sym">Rz</span>
+            <span class="gb-name">Z-rotation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Phase Gate -->
+      <div class="cat-section" data-cat="phase">
+        <div class="cat-header">
+          <span class="cat-dot"></span>
+          <h2 class="cat-title">Phase Gate</h2>
+        </div>
+        <div class="angle-group">
+          <label for="phase-angle">φ</label>
+          <input type="number" id="phase-angle" value="45"
+                 min="-360" max="360" step="5"
+                 class="angle-input" aria-label="Phase angle in degrees" />
+          <span class="angle-unit">°</span>
+        </div>
+        <div class="gate-grid">
+          <button class="gate-btn gate-btn--wide" data-gate="P" data-cat="phase" aria-label="Phase gate P(phi)">
+            <span class="gb-sym">P(φ)</span>
+            <span class="gb-name">Arbitrary Phase</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Measure -->
+      <div class="cat-section measure-section">
+        <button id="btn-measure" class="measure-btn" aria-label="Measure qubit">
+          <span class="measure-icon">⚡</span>
+          <span>Measure</span>
+        </button>
+        <p class="measure-hint">Collapses superposition to a definite outcome</p>
+      </div>
+
+      <!-- Keyboard shortcuts hint -->
+      <div class="shortcuts-hint">
+        <span class="shortcuts-title">Shortcuts</span>
+        <div class="shortcut-row"><kbd>X</kbd><kbd>Y</kbd><kbd>Z</kbd><kbd>H</kbd><kbd>S</kbd><kbd>T</kbd> — apply gate</div>
+        <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Ctrl</kbd>+<kbd>Y</kbd> redo</div>
+      </div>
+
+    </aside>
+
+    <!-- ─── CENTER: Bloch sphere + Circuit ─────────── -->
+    <section id="center-panel">
+
+      <!-- Bloch Sphere -->
+      <div id="bloch-section" class="glass-panel">
+        <div class="bloch-toolbar">
+          <div class="bloch-title-group">
+            <span class="bloch-title">Bloch Sphere</span>
+            <span class="bloch-hint">Drag to rotate · Scroll to zoom</span>
+          </div>
+          <div class="view-presets">
+            <button class="view-preset-btn" data-az="-0.55" data-el="0.38"  title="Default view">Default</button>
+            <button class="view-preset-btn" data-az="0"     data-el="0"     title="Side view">Side</button>
+            <button class="view-preset-btn" data-az="0"     data-el="1.5"   title="Top view">Top</button>
+          </div>
+        </div>
+        <div class="bloch-canvas-wrap">
+          <canvas id="bloch-canvas" aria-label="Bloch sphere visualisation"></canvas>
+        </div>
+      </div>
+
+      <!-- Circuit View -->
+      <div id="circuit-section" class="glass-panel">
+        <div class="circuit-toolbar">
+          <span class="circuit-title">Quantum Circuit</span>
+          <div class="circuit-actions">
+            <button id="btn-clear" class="circ-btn circ-btn--danger" title="Clear all gates">✕ Clear</button>
+          </div>
+        </div>
+        <div class="circuit-track">
+          <div class="circuit-qubit-label">q[0] |0⟩</div>
+          <div class="circuit-wire-wrap">
+            <div class="wire-line" aria-hidden="true"></div>
+            <div id="circuit-gates" class="circuit-gates" role="list" aria-label="Applied gates"></div>
+          </div>
+          <div class="circuit-end" aria-hidden="true">──✦</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── RIGHT: State Info ───────────────────────── -->
+    <aside id="state-panel" class="glass-panel" aria-label="Quantum state information">
+
+      <!-- Quantum State Amplitudes -->
+      <div class="panel-sec">
+        <h3 class="panel-sec-title">Quantum State  |ψ⟩ = α|0⟩ + β|1⟩</h3>
+        <div class="amplitude-display">
+          <div class="amp-row">
+            <div class="amp-ket">α · |0⟩</div>
+            <div class="amp-val" id="alpha-display">1.0000 + 0.0000i</div>
+            <div class="amp-bar-track">
+              <div class="amp-bar amp-bar--zero" id="alpha-bar" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="amp-row">
+            <div class="amp-ket">β · |1⟩</div>
+            <div class="amp-val" id="beta-display">0.0000 + 0.0000i</div>
+            <div class="amp-bar-track">
+              <div class="amp-bar amp-bar--one" id="beta-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Measurement Probabilities -->
+      <div class="panel-sec">
+        <h3 class="panel-sec-title">Measurement Probabilities</h3>
+        <div class="prob-display">
+          <div class="prob-row">
+            <div class="prob-header-row">
+              <span class="prob-ket">P(|0⟩)</span>
+              <span class="prob-pct" id="prob0-pct">100.00%</span>
+            </div>
+            <div class="prob-bar-track">
+              <div class="prob-bar-fill prob-bar--zero" id="prob0-bar" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="prob-row">
+            <div class="prob-header-row">
+              <span class="prob-ket">P(|1⟩)</span>
+              <span class="prob-pct" id="prob1-pct">0.00%</span>
+            </div>
+            <div class="prob-bar-track">
+              <div class="prob-bar-fill prob-bar--one" id="prob1-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gate Information -->
+      <div class="panel-sec panel-sec--grow">
+        <h3 class="panel-sec-title">Gate Information</h3>
+        <div id="gate-info-body">
+          <!-- Populated by UIManager -->
+        </div>
+      </div>
+
+    </aside>
+
+  </main><!-- #main -->
+</div><!-- #app -->
+
+<!-- ════════════════════════════════════════════
+     MEASUREMENT MODAL
+════════════════════════════════════════════ -->
+<div id="measure-modal" class="measure-modal hidden" role="dialog" aria-modal="true" aria-labelledby="measure-modal-title">
+  <div class="measure-backdrop"></div>
+  <div class="measure-card">
+    <div class="measure-spark" aria-hidden="true">⚡</div>
+    <h2 id="measure-modal-title" class="measure-card-title">Measurement Complete</h2>
+    <p class="measure-card-sub">Quantum superposition has collapsed to a definite state</p>
+
+    <div class="measure-result-row">
+      <div class="measure-outcome-val" id="measure-outcome">|0⟩</div>
+    </div>
+
+    <div class="measure-probs">
+      <div class="measure-prob-item">
+        <span class="mp-label">P(|0⟩)</span>
+        <span class="mp-val" id="modal-prob0">—</span>
+      </div>
+      <div class="measure-prob-sep"></div>
+      <div class="measure-prob-item">
+        <span class="mp-label">P(|1⟩)</span>
+        <span class="mp-val" id="modal-prob1">—</span>
+      </div>
+    </div>
+
+    <button id="measure-continue" class="measure-continue-btn">Continue Experimenting →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Scripts (order matters: math → gates → components → app) -->
+<script src="js/quantum.js"></script>
+<script src="js/gates.js"></script>
+<script src="js/bloch.js"></script>
+<script src="js/circuit.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
