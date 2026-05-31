@@ -2,7 +2,8 @@
 
 > **An interactive, browser-based quantum gate visualizer** — apply gates, watch your qubit evolve on a real-time 3-D Bloch sphere, and understand quantum computing intuitively.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue?style=flat-square&logo=github)](https://your-username.github.io/Quantum-Glasses/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue?style=flat-square&logo=github)](https://priyamdixit21.github.io/Quantum-Glasses/)
+[![GitHub](https://img.shields.io/badge/Source-GitHub-181717?style=flat-square&logo=github)](https://github.com/PriyamDixit21/Quantum-Glasses)
 [![Tech](https://img.shields.io/badge/Built%20with-HTML%20·%20CSS%20·%20JavaScript-informational?style=flat-square)]()
 [![No Dependencies](https://img.shields.io/badge/Dependencies-None-success?style=flat-square)]()
 
